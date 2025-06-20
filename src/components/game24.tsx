@@ -172,23 +172,27 @@ export default function Game24() {
 
   return (
     <Stack spacing={2} alignItems="center">
-      <Box
-        sx={{
-          p: 2,
-          border: "1px solid #ccc",
-          borderRadius: 2,
-          width: "fit-content",
-          boxShadow: theme.shadows[1],
-        }}
-      >
-        <Typography variant="h3"> {numbers.join(" ")}</Typography>
+      <Box>
+        {" "}
+        <Box
+          sx={{
+            p: 2,
+            border: "1px solid #ccc",
+            borderRadius: 2,
+            width: "fit-content",
+            boxShadow: theme.shadows[1],
+          }}
+        >
+          <Typography variant="h3"> {numbers.join(" ")}</Typography>
+        </Box>
+        <Typography
+          variant="h5"
+          color={solvableResult === "Solvable!" ? "green" : "red"}
+        >
+          {solvableResult}
+        </Typography>
       </Box>
-      <Typography
-        variant="h5"
-        color={solvableResult === "Solvable!" ? "green" : "red"}
-      >
-        {solvableResult}
-      </Typography>
+
       <TextField
         // label="Enter your expression"
         value={expression}
@@ -218,12 +222,6 @@ export default function Game24() {
       />
       <NumPad onButtonClick={handleButtonClick} />
 
-      <Typography variant="h5" color={result === "Correct!" ? "green" : "red"}>
-        {result}
-      </Typography>
-      {evaluateResult && (
-        <Typography variant="h6">Evaluate Result: {evaluateResult}</Typography>
-      )}
       <Box
         sx={{
           display: "grid",
@@ -231,6 +229,21 @@ export default function Game24() {
           gap: 2,
         }}
       >
+        <Box gridColumn="span 2">
+          <Typography
+            variant="h5"
+            color={result === "Correct!" ? "green" : "red"}
+          >
+            {result}
+          </Typography>
+        </Box>
+        <Box gridColumn="span 2">
+          {evaluateResult && (
+            <Typography variant="h6">
+              Evaluate Result: {evaluateResult}
+            </Typography>
+          )}
+        </Box>
         <ButtonComponent
           icon={<CheckCircleOutlinedIcon />}
           text="Check"
