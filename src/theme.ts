@@ -33,7 +33,7 @@ export const getTheme = (mode: "light" | "dark") =>
       },
       h6: {
         position: "relative",
-        top: "-10px",
+        top: "-8px",
       },
     },
   });

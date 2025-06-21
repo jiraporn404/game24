@@ -7,7 +7,6 @@ import {
   Switch,
   ThemeProvider,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { useMemo, useState } from "react";
@@ -74,11 +73,11 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const theme = useMemo(() => getTheme(mode), [mode]);
-  const sm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const toggleMode = () => {
     setMode((prev) => (prev === "light" ? "dark" : "light"));
   };
+
   return (
     <Box
       sx={{
@@ -98,19 +97,14 @@ function App() {
             sx={{
               position: "relative",
               display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
+              justifyContent: "center",
               height: 60,
             }}
           >
             <Typography
               variant="h3"
               sx={{
-                position: "absolute",
-                left: sm ? "" : "50%",
-                transform: "translateX(-50%)",
                 margin: 0,
-                lineHeight: 1,
               }}
             >
               <span
@@ -126,8 +120,9 @@ function App() {
               <span style={{ color: randomColor() }}>2</span>
               <span style={{ color: randomColor() }}>4</span>
             </Typography>
-
-            <ModeSwitch checked={mode === "dark"} onChange={toggleMode} />
+            <Box sx={{ position: "absolute", right: 0 }}>
+              <ModeSwitch checked={mode === "dark"} onChange={toggleMode} />
+            </Box>
           </Box>
           <Game24 />
         </ThemeProvider>

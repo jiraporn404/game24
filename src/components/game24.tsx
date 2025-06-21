@@ -189,13 +189,13 @@ export default function Game24() {
         <Box
           sx={{
             p: 2,
-            border: "1px solid #ccc",
+            border: `1px dashed ${theme.palette.primary.light}`,
             borderRadius: 2,
             width: "fit-content",
-            boxShadow: theme.shadows[1],
+            boxShadow: theme.shadows[5],
           }}
         >
-          <Typography variant="h3"> {numbers.join(" ")}</Typography>
+          <Typography variant="h3"> {numbers.join("  ")}</Typography>
         </Box>
       </Box>
       <TextField
