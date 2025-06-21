@@ -4,8 +4,8 @@ const numPad = [
   [1, 2, 3, "+"],
   [4, 5, 6, "-"],
   [7, 8, 9, "*"],
-  [",", 0, "pow", "/"],
-  ["(", ")", "sqrt", "DEL"],
+  [",", "(", ")", "/"],
+  ["pow", "sqrt", "=", "DEL"],
 ];
 
 export default function NumPad({
@@ -23,15 +23,15 @@ export default function NumPad({
       }}
     >
       {numPad.map((row, index) => (
-        <Box key={index} sx={{ display: "flex", gap: 2 }}>
+        <Box key={index} sx={{ display: "flex", gap: 1 }}>
           {row.map((item, index) => (
             <Button
               key={index}
-              variant="outlined"
+              variant={item === "DEL" ? "contained" : "outlined"}
               color={
                 item === "DEL"
                   ? "error"
-                  : item === "Clear"
+                  : item === "="
                   ? "warning"
                   : "secondary"
               }
@@ -43,9 +43,7 @@ export default function NumPad({
               disabled={item === ""}
               onClick={() => onButtonClick(item.toString())}
             >
-              <Typography variant="h6" sx={{ fontSize: "1.5rem" }}>
-                {item}
-              </Typography>
+              <Typography variant="h6">{item}</Typography>
             </Button>
           ))}
         </Box>

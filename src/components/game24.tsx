@@ -1,4 +1,3 @@
-import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
@@ -131,6 +130,8 @@ export default function Game24() {
           setCursorPosition(cursorPosition - 1);
         }
       }
+    } else if (button === "=") {
+      handleEvaluate();
     } else {
       const beforeCursor = expression.slice(0, cursorPosition);
       const afterCursor = expression.slice(cursorPosition);
@@ -218,18 +219,20 @@ export default function Game24() {
             fontSize: "1.5rem",
             position: "relative",
             top: "-10px",
-            textAlign: "center",
+            // textAlign: "center",
           },
         }}
         size="small"
         InputProps={{
           endAdornment: (
-            <ClearIcon
-              onClick={handleClear}
-              sx={{
-                color: "warning.main",
-              }}
-            />
+            <>
+              <ClearIcon
+                onClick={handleClear}
+                sx={{
+                  color: "warning.main",
+                }}
+              />
+            </>
           ),
         }}
       />
@@ -243,30 +246,29 @@ export default function Game24() {
           width: "100%",
         }}
       >
-        <Box gridColumn="span 2">
-          <ButtonComponent
-            icon={<CheckCircleOutlinedIcon />}
-            text="Check"
-            onClick={handleCheck}
-            color="primary"
-            variant="contained"
-            isFullWidth
-          />
-        </Box>
-        <ButtonComponent
-          icon={<CalculateOutlinedIcon />}
-          text="Evaluate"
-          onClick={handleEvaluate}
-          color="warning"
-          variant="outlined"
-        />
         <ButtonComponent
           icon={<RefreshOutlinedIcon />}
           text="New Game"
           onClick={handleNewGame}
           color="secondary"
-          variant="outlined"
+          variant="contained"
         />
+        <ButtonComponent
+          icon={<CheckCircleOutlinedIcon />}
+          text="Check"
+          onClick={handleCheck}
+          color="primary"
+          variant="contained"
+          isFullWidth
+        />
+        <Box gridColumn="span 2"></Box>
+        {/* <ButtonComponent
+          icon={<CalculateOutlinedIcon />}
+          text="Evaluate"
+          onClick={handleEvaluate}
+          color="warning"
+          variant="outlined"
+        /> */}
       </Box>
     </Stack>
   );

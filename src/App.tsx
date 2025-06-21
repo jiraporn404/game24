@@ -84,7 +84,7 @@ function App() {
       sx={{
         backgroundColor: theme.palette.background.default,
         minHeight: "100vh",
-        p: 2,
+        p: 1.5,
       }}
     >
       <SnackbarProvider
