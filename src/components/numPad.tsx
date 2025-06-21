@@ -6,7 +6,6 @@ const numPad = [
   [7, 8, 9, "*"],
   [",", 0, "pow", "/"],
   ["(", ")", "sqrt", "DEL"],
-  ["Clear"],
 ];
 
 export default function NumPad({
@@ -20,6 +19,7 @@ export default function NumPad({
         display: "grid",
         gap: 2,
         margin: "0 auto",
+        width: "100%",
       }}
     >
       {numPad.map((row, index) => (

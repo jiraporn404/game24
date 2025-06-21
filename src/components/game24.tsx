@@ -1,3 +1,7 @@
+import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import ClearIcon from "@mui/icons-material/Clear";
+import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import {
   Box,
   Button,
@@ -6,15 +10,12 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { generateNumbers } from "../utils/random";
-import { useState, useRef, useEffect } from "react";
-import { isSolvable, isValidate24 } from "../utils/validate";
-import NumPad from "./numPad";
 import { evaluate } from "mathjs";
-import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
-import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
-import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
-import QuestionMarkOutlinedIcon from "@mui/icons-material/QuestionMarkOutlined";
+import { useSnackbar } from "notistack";
+import { useEffect, useRef, useState } from "react";
+import { generateNumbers } from "../utils/random";
+import { isValidate24 } from "../utils/validate";
+import NumPad from "./numPad";
 
 const ButtonComponent = ({
   icon,
@@ -22,12 +23,14 @@ const ButtonComponent = ({
   onClick,
   color,
   variant,
+  isFullWidth = false,
 }: {
   icon: React.ReactNode;
   text: string;
   onClick: () => void;
   color: "primary" | "secondary" | "error" | "warning" | "info" | "success";
   variant: "outlined" | "contained";
+  isFullWidth?: boolean;
 }) => {
   return (
     <Button
@@ -35,6 +38,7 @@ const ButtonComponent = ({
       color={color}
       onClick={onClick}
       size="large"
+      fullWidth={isFullWidth}
       sx={{
         display: "flex",
         alignItems: "center",
@@ -48,34 +52,59 @@ const ButtonComponent = ({
 
 export default function Game24() {
   const theme = useTheme();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [numbers, setNumbers] = useState<number[]>(generateNumbers());
   const [expression, setExpression] = useState<string>("");
-  const [result, setResult] = useState<string>("");
-  const [evaluateResult, setEvaluateResult] = useState<string>("");
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const textFieldRef = useRef<HTMLInputElement>(null);
-  const [solvableResult, setSolvableResult] = useState<string>("");
 
   const handleNewGame = () => {
     setNumbers(generateNumbers());
     setExpression("");
     setCursorPosition(0);
-    setResult("");
-    setEvaluateResult("");
-    setSolvableResult("");
+    closeSnackbar();
   };
 
   const handleCheck = () => {
-    if (isValidate24(expression)) {
-      setResult("Correct!");
-    } else {
-      setResult("Incorrect!");
-    }
+    enqueueSnackbar(
+      <span style={{ fontSize: "1.25rem", position: "relative", top: "-8px" }}>
+        {isValidate24(expression) ? "Correct!" : "Incorrect!"}
+      </span>,
+      { variant: isValidate24(expression) ? "success" : "error" }
+    );
   };
 
+  const handleClear = () => {
+    setExpression("");
+    setCursorPosition(0);
+    closeSnackbar();
+  };
+
+  const handleEvaluate = () => {
+    closeSnackbar();
+    try {
+      const evalResult = evaluate(expression);
+      enqueueSnackbar(
+        <span
+          style={{ fontSize: "1.25rem", position: "relative", top: "-8px" }}
+        >
+          Result: <b>{evalResult.toString()}</b>
+        </span>,
+        { variant: "info" }
+      );
+    } catch (error) {
+      enqueueSnackbar(
+        <span
+          style={{ fontSize: "1.25rem", position: "relative", top: "-8px" }}
+        >
+          Invalid expression
+        </span>,
+        { variant: "error" }
+      );
+    }
+  };
   const handleButtonClick = (button: string) => {
-    setResult("");
-    setEvaluateResult("");
+    closeSnackbar();
     if (button === "DEL") {
       const beforeCursor = expression.slice(0, cursorPosition);
       const afterCursor = expression.slice(cursorPosition);
@@ -102,37 +131,23 @@ export default function Game24() {
           setCursorPosition(cursorPosition - 1);
         }
       }
-    } else if (button === "Clear") {
-      setExpression("");
-      setCursorPosition(0);
     } else {
-      // Handle insertion at cursor position
       const beforeCursor = expression.slice(0, cursorPosition);
       const afterCursor = expression.slice(cursorPosition);
 
       let insertText = button;
       let newCursorPosition = cursorPosition + button.length;
 
-      // Handle special functions that need parentheses
       if (button === "sqrt") {
         insertText = "sqrt(";
-        newCursorPosition = cursorPosition + 5; // Position cursor after "sqrt("
+        newCursorPosition = cursorPosition + 5;
       } else if (button === "pow") {
         insertText = "pow(";
-        newCursorPosition = cursorPosition + 4; // Position cursor after "pow("
+        newCursorPosition = cursorPosition + 4;
       }
 
       setExpression(beforeCursor + insertText + afterCursor);
       setCursorPosition(newCursorPosition);
-    }
-  };
-
-  const handleEvaluate = () => {
-    try {
-      const evalResult = evaluate(expression);
-      setEvaluateResult(evalResult.toString());
-    } catch (error) {
-      setEvaluateResult("Invalid expression");
     }
   };
 
@@ -151,10 +166,6 @@ export default function Game24() {
     setCursorPosition(target.selectionStart || 0);
   };
 
-  const handleSolve = () => {
-    setSolvableResult(isSolvable(numbers) ? "Solvable!" : "Not solvable!");
-  };
-
   useEffect(() => {
     if (textFieldRef.current) {
       const input = textFieldRef.current.querySelector(
@@ -165,15 +176,15 @@ export default function Game24() {
         input.focus();
       }
     }
-    setResult("");
-    setEvaluateResult("");
-    setSolvableResult("");
   }, [expression, cursorPosition]);
 
   return (
-    <Stack spacing={2} alignItems="center">
-      <Box>
-        {" "}
+    <Stack
+      spacing={2}
+      alignItems="center"
+      sx={{ width: "100%", height: "100%" }}
+    >
+      <Box sx={{ display: "flex", alignItems: "end", gap: 2 }}>
         <Box
           sx={{
             p: 2,
@@ -185,16 +196,8 @@ export default function Game24() {
         >
           <Typography variant="h3"> {numbers.join(" ")}</Typography>
         </Box>
-        <Typography
-          variant="h5"
-          color={solvableResult === "Solvable!" ? "green" : "red"}
-        >
-          {solvableResult}
-        </Typography>
       </Box>
-
       <TextField
-        // label="Enter your expression"
         value={expression}
         onChange={handleExpressionChange}
         onMouseUp={handleTextFieldClick}
@@ -219,6 +222,16 @@ export default function Game24() {
           },
         }}
         size="small"
+        InputProps={{
+          endAdornment: (
+            <ClearIcon
+              onClick={handleClear}
+              sx={{
+                color: "warning.main",
+              }}
+            />
+          ),
+        }}
       />
       <NumPad onButtonClick={handleButtonClick} />
 
@@ -227,37 +240,19 @@ export default function Game24() {
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
           gap: 2,
+          width: "100%",
         }}
       >
         <Box gridColumn="span 2">
-          <Typography
-            variant="h5"
-            color={result === "Correct!" ? "green" : "red"}
-          >
-            {result}
-          </Typography>
+          <ButtonComponent
+            icon={<CheckCircleOutlinedIcon />}
+            text="Check"
+            onClick={handleCheck}
+            color="primary"
+            variant="contained"
+            isFullWidth
+          />
         </Box>
-        <Box gridColumn="span 2">
-          {evaluateResult && (
-            <Typography variant="h6">
-              Evaluate Result: {evaluateResult}
-            </Typography>
-          )}
-        </Box>
-        <ButtonComponent
-          icon={<CheckCircleOutlinedIcon />}
-          text="Check"
-          onClick={handleCheck}
-          color="primary"
-          variant="contained"
-        />
-        <ButtonComponent
-          icon={<RefreshOutlinedIcon />}
-          text="New Game"
-          onClick={handleNewGame}
-          color="secondary"
-          variant="contained"
-        />
         <ButtonComponent
           icon={<CalculateOutlinedIcon />}
           text="Evaluate"
@@ -266,10 +261,10 @@ export default function Game24() {
           variant="outlined"
         />
         <ButtonComponent
-          icon={<QuestionMarkOutlinedIcon />}
-          text="Solve"
-          onClick={handleSolve}
-          color="error"
+          icon={<RefreshOutlinedIcon />}
+          text="New Game"
+          onClick={handleNewGame}
+          color="secondary"
           variant="outlined"
         />
       </Box>

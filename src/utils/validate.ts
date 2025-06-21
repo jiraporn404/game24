@@ -12,7 +12,6 @@ export const isValidate24 = (expression: string): boolean => {
 export const isSolvable = (numbers: number[]): boolean => {
   const ops = ["+", "-", "*", "/"];
 
-  // Generate all permutations of 4 numbers
   function permute(nums: number[]): number[][] {
     if (nums.length === 1) return [nums];
     const result: number[][] = [];
@@ -26,7 +25,6 @@ export const isSolvable = (numbers: number[]): boolean => {
     return result;
   }
 
-  // Try all operator combinations
   function getOpCombos(): string[][] {
     const result: string[][] = [];
     for (const op1 of ops) {
@@ -39,7 +37,6 @@ export const isSolvable = (numbers: number[]): boolean => {
     return result;
   }
 
-  // Try all possible grouping of expressions
   function evalExpression(
     a: number,
     b: number,
@@ -51,14 +48,12 @@ export const isSolvable = (numbers: number[]): boolean => {
     const results = [];
 
     try {
-      results.push(eval(`${a}${op1}${b}${op2}${c}${op3}${d}`)); // ((a op1 b) op2 c) op3 d
-      results.push(eval(`(${a}${op1}${b})${op2}(${c}${op3}${d})`)); // (a op1 b) op2 (c op3 d)
-      results.push(eval(`((${a}${op1}${b})${op2}${c})${op3}${d}`)); // ((a op1 b) op2 c) op3 d
-      results.push(eval(`${a}${op1}((${b}${op2}${c})${op3}${d})`)); // a op1 ((b op2 c) op3 d)
-      results.push(eval(`${a}${op1}(${b}${op2}(${c}${op3}${d}))`)); // a op1 (b op2 (c op3 d))
-    } catch (e) {
-      // Ignore division by zero and invalid expressions
-    }
+      results.push(eval(`${a}${op1}${b}${op2}${c}${op3}${d}`));
+      results.push(eval(`(${a}${op1}${b})${op2}(${c}${op3}${d})`));
+      results.push(eval(`((${a}${op1}${b})${op2}${c})${op3}${d}`));
+      results.push(eval(`${a}${op1}((${b}${op2}${c})${op3}${d})`));
+      results.push(eval(`${a}${op1}(${b}${op2}(${c}${op3}${d}))`));
+    } catch (e) {}
 
     return results;
   }
@@ -79,3 +74,55 @@ export const isSolvable = (numbers: number[]): boolean => {
 
   return false;
 };
+
+export function solve24(nums: number[]): boolean {
+  if (nums.length === 0) return false;
+  const EPS = 1e-6;
+
+  function combine(a: number, b: number): number[] {
+    const results = [a + b, a - b, b - a, a * b];
+    if (Math.abs(b) > EPS) results.push(a / b);
+    if (Math.abs(a) > EPS) results.push(b / a);
+    results.push(Math.pow(a, b));
+    results.push(Math.pow(b, a));
+    return results;
+  }
+
+  function helper(arr: number[]): boolean {
+    if (arr.length === 1) {
+      return Math.abs(arr[0] - 24) < EPS;
+    }
+
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = i + 1; j < arr.length; j++) {
+        const rest = arr.filter((_, idx) => idx !== i && idx !== j);
+        for (const val of combine(arr[i], arr[j])) {
+          rest.push(val);
+          if (helper(rest)) return true;
+          rest.pop();
+        }
+      }
+    }
+
+    return false;
+  }
+
+  function genSqrts(input: number[]): number[][] {
+    const n = input.length,
+      res: number[][] = [];
+    const total = 1 << n;
+    for (let mask = 0; mask < total; mask++) {
+      const arr2 = input.map((v, idx) =>
+        (mask >> idx) & 1 ? Math.sqrt(v) : v
+      );
+      res.push(arr2);
+    }
+    return res;
+  }
+
+  for (const variant of genSqrts(nums)) {
+    if (helper(variant)) return true;
+  }
+
+  return false;
+}

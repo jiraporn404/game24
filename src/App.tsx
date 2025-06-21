@@ -1,3 +1,5 @@
+import "./App.css";
+
 import {
   Box,
   CssBaseline,
@@ -7,10 +9,10 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import "./App.css";
+import { SnackbarProvider } from "notistack";
+import { useMemo, useState } from "react";
 import Game24 from "./components/game24";
 import { getTheme } from "./theme";
-import { useMemo, useState } from "react";
 import { randomColor } from "./utils/random";
 
 const ModeSwitch = styled(Switch)(({ theme }) => ({
@@ -72,7 +74,7 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const theme = useMemo(() => getTheme(mode), [mode]);
-  const md = useMediaQuery(theme.breakpoints.down("md"));
+  const sm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const toggleMode = () => {
     setMode((prev) => (prev === "light" ? "dark" : "light"));
@@ -81,49 +83,56 @@ function App() {
     <Box
       sx={{
         backgroundColor: theme.palette.background.default,
-        height: "100vh",
+        minHeight: "100vh",
         p: 2,
       }}
     >
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Box
-          sx={{
-            position: "relative",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            height: 80,
-          }}
-        >
-          <Typography
-            variant="h2"
+      <SnackbarProvider
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        hideIconVariant
+        maxSnack={3}
+        autoHideDuration={3000}
+      >
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Box
             sx={{
-              position: "absolute",
-              left: md ? "" : "50%",
-              transform: "translateX(-50%)",
-              margin: 0,
-              lineHeight: 1,
+              position: "relative",
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              height: 60,
             }}
           >
-            <span
-              style={{
-                color: randomColor(),
+            <Typography
+              variant="h3"
+              sx={{
+                position: "absolute",
+                left: sm ? "" : "50%",
+                transform: "translateX(-50%)",
+                margin: 0,
+                lineHeight: 1,
               }}
             >
-              G
-            </span>
-            <span style={{ color: randomColor() }}>a</span>
-            <span style={{ color: randomColor() }}>m</span>
-            <span style={{ color: randomColor() }}>e</span>{" "}
-            <span style={{ color: randomColor() }}>2</span>
-            <span style={{ color: randomColor() }}>4</span>
-          </Typography>
+              <span
+                style={{
+                  color: randomColor(),
+                }}
+              >
+                G
+              </span>
+              <span style={{ color: randomColor() }}>a</span>
+              <span style={{ color: randomColor() }}>m</span>
+              <span style={{ color: randomColor() }}>e</span>{" "}
+              <span style={{ color: randomColor() }}>2</span>
+              <span style={{ color: randomColor() }}>4</span>
+            </Typography>
 
-          <ModeSwitch checked={mode === "dark"} onChange={toggleMode} />
-        </Box>
-        <Game24 />
-      </ThemeProvider>
+            <ModeSwitch checked={mode === "dark"} onChange={toggleMode} />
+          </Box>
+          <Game24 />
+        </ThemeProvider>
+      </SnackbarProvider>
     </Box>
   );
 }
