@@ -13,7 +13,7 @@ import { evaluate } from "mathjs";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
 import { generateNumbers } from "../utils/random";
-import { isValidate24 } from "../utils/validate";
+import { isSolvable, isValidate24 } from "../utils/validate";
 import NumPad from "./numPad";
 
 const ButtonComponent = ({
@@ -102,6 +102,16 @@ export default function Game24() {
       );
     }
   };
+
+  const handleSolve = () => {
+    const result = isSolvable(numbers);
+    enqueueSnackbar(
+      <span style={{ fontSize: "1.25rem", position: "relative", top: "-8px" }}>
+        {result ? "Solvable!" : "Unsolvable!"}
+      </span>,
+      { variant: result ? "success" : "error" }
+    );
+  };
   const handleButtonClick = (button: string) => {
     closeSnackbar();
     if (button === "DEL") {
@@ -109,7 +119,6 @@ export default function Game24() {
       const afterCursor = expression.slice(cursorPosition);
 
       if (beforeCursor.endsWith("sqrt(") && afterCursor.startsWith(")")) {
-        console.log("beforeCursor", beforeCursor);
         setExpression(beforeCursor.slice(0, -5) + afterCursor.slice(1));
         setCursorPosition(cursorPosition - 5);
       } else if (beforeCursor.endsWith("pow(") && afterCursor.startsWith(")")) {
@@ -197,6 +206,13 @@ export default function Game24() {
         >
           <Typography variant="h3"> {numbers.join("  ")}</Typography>
         </Box>
+        <Typography
+          variant="h6"
+          onClick={handleSolve}
+          color={theme.palette.warning.main}
+        >
+          ?
+        </Typography>
       </Box>
       <TextField
         value={expression}
@@ -216,13 +232,13 @@ export default function Game24() {
         inputRef={textFieldRef}
         sx={{
           "& .MuiInputBase-input": {
-            fontSize: "1.5rem",
+            fontSize: "1.25rem",
             position: "relative",
-            top: "-10px",
+            top: "-5px",
             // textAlign: "center",
           },
         }}
-        size="small"
+        size="medium"
         InputProps={{
           endAdornment: (
             <>
