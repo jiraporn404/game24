@@ -83,7 +83,6 @@ function App() {
     <Box
       sx={{
         backgroundColor: theme.palette.background.default,
-        minHeight: "100vh",
         p: 1.5,
       }}
     >
