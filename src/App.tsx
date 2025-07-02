@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import Game24 from "./components/game24";
 import { getTheme } from "./theme";
 import { randomColor } from "./utils/random";
+import { version } from "../package.json";
 
 const ModeSwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -125,6 +126,17 @@ function App() {
             </Box>
           </Box>
           <Game24 />
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 4,
+            }}
+          >
+            <Typography fontSize={10} align="center" color="text.secondary">
+              Copyright 2025 Game24. All rights reserved. v{version} | Developed
+              by jiraporn404
+            </Typography>
+          </Box>
         </ThemeProvider>
       </SnackbarProvider>
     </Box>
