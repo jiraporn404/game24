@@ -12,9 +12,10 @@ import {
 import { evaluate } from "mathjs";
 import { useSnackbar } from "notistack";
 import { useEffect, useRef, useState } from "react";
-import { generateNumbers } from "../utils/random";
+import { generateSolvable24Numbers } from "../utils/random";
 import { isSolvable, isValidate24 } from "../utils/validate";
 import NumPad from "./numPad";
+import { getInfo, updateInfo } from "../services";
 
 const ButtonComponent = ({
   icon,
@@ -42,6 +43,7 @@ const ButtonComponent = ({
         display: "flex",
         alignItems: "center",
         gap: 1,
+        color: "white",
       }}
     >
       {icon} <Typography variant="h6">{text}</Typography>
@@ -52,13 +54,14 @@ const ButtonComponent = ({
 export default function Game24() {
   const theme = useTheme();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const [numbers, setNumbers] = useState<number[]>(generateNumbers());
+  const [numbers, setNumbers] = useState<number[]>(generateSolvable24Numbers());
   const [expression, setExpression] = useState<string>("");
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const textFieldRef = useRef<HTMLInputElement>(null);
+  const [totalPlay, setTotalPlay] = useState<number>(0);
 
-  const handleNewGame = () => {
-    setNumbers(generateNumbers());
+  const handleNewGame = async () => {
+    setNumbers(generateSolvable24Numbers());
     setExpression("");
     setCursorPosition(0);
     closeSnackbar();
@@ -112,6 +115,16 @@ export default function Game24() {
       { variant: result ? "success" : "error" }
     );
   };
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const info = await getInfo();
+      setTotalPlay(info?.totalPlay + 1 || 0);
+      updateInfo({ totalPlay: info?.totalPlay + 1 });
+    };
+    fetchInfo();
+  }, [numbers]);
+
   const handleButtonClick = (button: string) => {
     closeSnackbar();
     if (button === "DEL") {
@@ -273,7 +286,7 @@ export default function Game24() {
           icon={<CheckCircleOutlinedIcon />}
           text="Check"
           onClick={handleCheck}
-          color="primary"
+          color="success"
           variant="contained"
           isFullWidth
         />
@@ -285,6 +298,19 @@ export default function Game24() {
           color="warning"
           variant="outlined"
         /> */}
+      </Box>
+      <Box
+        sx={{
+          p: 1,
+          py: 0.5,
+          border: `1px dashed ${theme.palette.primary.light}`,
+          borderRadius: 2,
+          width: "fit-content",
+        }}
+      >
+        <Typography variant="body2">
+          Total Play: {totalPlay.toLocaleString()}
+        </Typography>
       </Box>
     </Stack>
   );

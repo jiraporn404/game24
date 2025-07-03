@@ -14,6 +14,11 @@ export const getTheme = (mode: "light" | "dark") =>
         main: "#4C97F1",
         dark: "#3569a8",
       },
+      success: {
+        light: "#0DDBC5",
+        main: "#00B894",
+        dark: "#00866D",
+      },
       ...(mode === "dark" && {
         background: {
           default: "#121212",
@@ -34,6 +39,10 @@ export const getTheme = (mode: "light" | "dark") =>
       h6: {
         position: "relative",
         top: "-8px",
+      },
+      body2: {
+        position: "relative",
+        top: "-5px",
       },
     },
   });

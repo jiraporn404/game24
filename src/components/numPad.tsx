@@ -40,7 +40,6 @@ export default function NumPad({
                 width: "100%",
                 height: "100%",
               }}
-              disabled={item === ""}
               onClick={() => onButtonClick(item.toString())}
             >
               <Typography variant="h6">{item}</Typography>
