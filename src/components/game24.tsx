@@ -290,7 +290,24 @@ export default function Game24() {
           variant="contained"
           isFullWidth
         />
-        <Box gridColumn="span 2"></Box>
+        <Box
+          gridColumn="span 2"
+          sx={{ display: "flex", justifyContent: "center" }}
+        >
+          <Box
+            sx={{
+              p: 1,
+              py: 0.5,
+              border: `1px dashed ${theme.palette.primary.light}`,
+              borderRadius: 2,
+              width: "fit-content",
+            }}
+          >
+            <Typography variant="body2">
+              Total Play: {totalPlay.toLocaleString()}
+            </Typography>
+          </Box>
+        </Box>
         {/* <ButtonComponent
           icon={<CalculateOutlinedIcon />}
           text="Evaluate"
@@ -298,19 +315,6 @@ export default function Game24() {
           color="warning"
           variant="outlined"
         /> */}
-      </Box>
-      <Box
-        sx={{
-          p: 1,
-          py: 0.5,
-          border: `1px dashed ${theme.palette.primary.light}`,
-          borderRadius: 2,
-          width: "fit-content",
-        }}
-      >
-        <Typography variant="body2">
-          Total Play: {totalPlay.toLocaleString()}
-        </Typography>
       </Box>
     </Stack>
   );

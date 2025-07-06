@@ -81,9 +81,11 @@ function App() {
 
   return (
     <Box
+      position="relative"
       sx={{
         backgroundColor: theme.palette.background.default,
         p: 1.5,
+        // minHeight: "100vh",
       }}
     >
       <SnackbarProvider
@@ -126,6 +128,7 @@ function App() {
             </Box>
           </Box>
           <Game24 />
+          <br />
           <Box
             sx={{
               position: "absolute",
